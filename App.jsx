@@ -1,35 +1,51 @@
 import React, { useState } from 'react';
-
-// 우리가 만든 3개 폴더의 메인 컴포넌트들
 import Lobby from './components/Lobby/Lobby';
 import Battle from './components/Battle/Battle';
 import GameOver from './components/Result/GameOver';
 import Result from './components/Result/Result';
+import PracticeMode from './components/Practice/PracticeMode'; 
+import WaitingRoom from './components/Room/WaitingRoom'; 
 
 export default function App() {
-  // 화면 상태: 'lobby' -> 'battle' -> 'gameover' -> 'result'
   const [currentScreen, setCurrentScreen] = useState('lobby');
+  
+  // 🌟 현재 입장한 방의 데이터를 저장하는 상태
+  const [currentRoom, setCurrentRoom] = useState(null);
 
   return (
-    <>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
+      
       {currentScreen === 'lobby' && (
-        <Lobby onStartBattle={() => setCurrentScreen('battle')} />
+        <Lobby 
+          // 🌟 방에 입장할 때 방 데이터(roomData)를 받아서 저장하고 대기실로 이동
+          onJoinRoom={(roomData) => {
+            setCurrentRoom(roomData);
+            setCurrentScreen('waiting');
+          }} 
+          onStartPractice={() => setCurrentScreen('practice')} 
+        />
       )}
 
+      {currentScreen === 'waiting' && (
+        <WaitingRoom 
+          roomData={currentRoom} // 🌟 대기실에 방 데이터 전달
+          onStartBattle={() => setCurrentScreen('battle')} 
+          onLeaveRoom={() => setCurrentScreen('lobby')} 
+        />
+      )}
+
+      {currentScreen === 'practice' && <PracticeMode onExit={() => setCurrentScreen('lobby')} />}
+      
       {currentScreen === 'battle' && (
-        // 배틀 중에 나가거나 게임이 끝나면 'gameover' 창으로 넘어갑니다.
-        <Battle onExit={() => setCurrentScreen('gameover')} />
+        <Battle 
+          roomData={currentRoom} // 🌟 배틀창에 방 데이터 전달
+          onExit={() => setCurrentScreen('gameover')} 
+        />
       )}
-
-      {currentScreen === 'gameover' && (
-        // 3초 뒤에 자동으로 'result' 창으로 넘겨줍니다.
-        <GameOver onFinish={() => setCurrentScreen('result')} />
-      )}
-
-      {currentScreen === 'result' && (
-        // 결과창에서 나가기 버튼을 누르면 다시 'lobby'로 돌아갑니다.
-        <Result onReturnLobby={() => setCurrentScreen('lobby')} />
-      )}
-    </>
+      
+      {currentScreen === 'gameover' && <GameOver onFinish={() => setCurrentScreen('result')} />}
+      {currentScreen === 'result' && <Result onReturnLobby={() => setCurrentScreen('lobby')} />}
+      
+    </div>
   );
 }
