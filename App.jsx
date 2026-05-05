@@ -8,16 +8,14 @@ import WaitingRoom from './components/Room/WaitingRoom';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('lobby');
-  
-  // 🌟 현재 입장한 방의 데이터를 저장하는 상태
   const [currentRoom, setCurrentRoom] = useState(null);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
+    // 🌟 절대 좌표를 사용해 브라우저 기본 여백을 완벽하게 무시하고 화면을 꽉 채웁니다.
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
       
       {currentScreen === 'lobby' && (
         <Lobby 
-          // 🌟 방에 입장할 때 방 데이터(roomData)를 받아서 저장하고 대기실로 이동
           onJoinRoom={(roomData) => {
             setCurrentRoom(roomData);
             setCurrentScreen('waiting');
@@ -28,7 +26,7 @@ export default function App() {
 
       {currentScreen === 'waiting' && (
         <WaitingRoom 
-          roomData={currentRoom} // 🌟 대기실에 방 데이터 전달
+          roomData={currentRoom} 
           onStartBattle={() => setCurrentScreen('battle')} 
           onLeaveRoom={() => setCurrentScreen('lobby')} 
         />
@@ -38,7 +36,7 @@ export default function App() {
       
       {currentScreen === 'battle' && (
         <Battle 
-          roomData={currentRoom} // 🌟 배틀창에 방 데이터 전달
+          roomData={currentRoom} 
           onExit={() => setCurrentScreen('gameover')} 
         />
       )}
