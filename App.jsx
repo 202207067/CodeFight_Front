@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import Lobby from './components/Lobby/Lobby';
 import Battle from './components/Battle/Battle';
-import GameOver from './components/Result/GameOver';
-import Result from './components/Result/Result';
-import PracticeMode from './components/Practice/PracticeMode'; 
-import WaitingRoom from './components/Room/WaitingRoom'; 
+import WaitingRoom from './components/Room/WaitingRoom';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('lobby');
   const [currentRoom, setCurrentRoom] = useState(null);
 
   return (
-    // 🌟 절대 좌표를 사용해 브라우저 기본 여백을 완벽하게 무시하고 화면을 꽉 채웁니다.
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
+    // 🌟 100vw를 완전히 삭제하고, 예전에 성공했던 절대 좌표 방식으로 돌려놓았습니다!
+    // 이제 화면이 오른쪽으로 밀리지 않고 모니터 정중앙에 1280x800 사이즈로 완벽하게 꽂힙니다.
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0f0f0f', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
       
       {currentScreen === 'lobby' && (
         <Lobby 
@@ -20,7 +18,7 @@ export default function App() {
             setCurrentRoom(roomData);
             setCurrentScreen('waiting');
           }} 
-          onStartPractice={() => setCurrentScreen('practice')} 
+          onStartPractice={() => setCurrentScreen('battle')} 
         />
       )}
 
@@ -32,17 +30,12 @@ export default function App() {
         />
       )}
 
-      {currentScreen === 'practice' && <PracticeMode onExit={() => setCurrentScreen('lobby')} />}
-      
       {currentScreen === 'battle' && (
         <Battle 
           roomData={currentRoom} 
-          onExit={() => setCurrentScreen('gameover')} 
+          onExit={() => setCurrentScreen('lobby')} 
         />
       )}
-      
-      {currentScreen === 'gameover' && <GameOver onFinish={() => setCurrentScreen('result')} />}
-      {currentScreen === 'result' && <Result onReturnLobby={() => setCurrentScreen('lobby')} />}
       
     </div>
   );
