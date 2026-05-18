@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CreateRoomModal from './CreateRoomModal'; 
+import Modal from "../components/common/Modal";
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase'; 
+import { db } from '../utils/firebase'; 
 
-export default function Lobby({ onJoinRoom, onStartPractice }) {
+export default function LobbyPage({ onJoinRoom, onStartPractice }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rooms, setRooms] = useState([]);
   
@@ -185,7 +185,7 @@ export default function Lobby({ onJoinRoom, onStartPractice }) {
           <button style={styles.exitBtn}>종료</button>
         </div>
 
-        {isModalOpen && <CreateRoomModal onClose={() => setIsModalOpen(false)} onCreate={handleCreateRoom} />}
+        {isModalOpen && <Modal onClose={() => setIsModalOpen(false)} onCreate={handleCreateRoom} />}
       </div>
     </div>
   );

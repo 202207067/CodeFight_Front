@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Lobby from './components/Lobby/Lobby';
-import Battle from './components/Battle/Battle';
-import WaitingRoom from './components/Room/WaitingRoom';
-// 🌟 방금 만든 GameOver 컴포넌트 임포트! (경로는 실제 파일 위치에 맞게 조정하세요)
+import LobbyPage from './pages/LobbyPage';
+import WaitingRoomPage from './pages/WaitingRoomPage';
+import BattlePage from './pages/BattlePage';
+import ResultPage from './pages/ResultPage';
 import GameOver from './components/Result/GameOver'; 
 
 export default function App() {
@@ -13,7 +13,7 @@ export default function App() {
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0f0f0f', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
       
       {currentScreen === 'lobby' && (
-        <Lobby 
+        <LobbyPage 
           onJoinRoom={(roomData) => {
             setCurrentRoom(roomData);
             setCurrentScreen('waiting');
@@ -23,7 +23,7 @@ export default function App() {
       )}
 
       {currentScreen === 'waiting' && (
-        <WaitingRoom 
+        <WaitingRoomPage
           roomData={currentRoom} 
           onStartBattle={() => setCurrentScreen('battle')} 
           onLeaveRoom={() => setCurrentScreen('lobby')} 
@@ -31,7 +31,7 @@ export default function App() {
       )}
 
       {currentScreen === 'battle' && (
-        <Battle 
+        <BattlePage 
           roomData={currentRoom} 
           onExit={() => setCurrentScreen('lobby')} 
           onShowResult={() => setCurrentScreen('result')} 
