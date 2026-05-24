@@ -1,24 +1,20 @@
-// src/store/useBattleStore.js
 import { create } from 'zustand';
 
 const useBattleStore = create((set) => ({
-  // 1번부터 5번 문제까지의 코드를 각각 따로 저장할 공간
+  // 1. 코드 저장소 
   codes: {
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
+    1: '', 2: '', 3: '', 4: '', 5: '',
   },
   
-  // 특정 번호의 문제 코드를 업데이트하는 함수
   setCode: (questionNumber, newCode) => 
     set((state) => ({
-      codes: {
-        ...state.codes,
-        [questionNumber]: newCode
-      }
+      codes: { ...state.codes, [questionNumber]: newCode }
     })),
+
+  // 2. 캐릭터 저장소 (
+
+  myCharacter: '👾', 
+  setMyCharacter: (icon) => set({ myCharacter: icon }),
 }));
 
 export default useBattleStore;

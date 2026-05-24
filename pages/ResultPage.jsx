@@ -1,120 +1,112 @@
 import React from 'react';
 
-export default function Result({ onReturnLobby }) {
-  // 가상의 게임 결과 데이터
-  const winTeam = [
-    { id: 1, name: '현서 (나)', scoreChange: '+ 25', isMe: true },
-    { id: 2, name: '자바깎는노인', scoreChange: '+ 20', isMe: false },
+// 컴포넌트 이름을 파일명에 맞게 ResultPage로 변경
+export default function ResultPage({ gameResults, onGoToLobby }) {
+  // 만약 데이터가 넘어오지 않았을 경우를 대비한 더미 데이터
+  const results = gameResults || [
+    { name: '현서 (나)', tierIcon: '💎', score: 95 },
+    { name: '자바깎는노인', tierIcon: '🥉', score: 80 },
+    { name: '도안팀장님', tierIcon: '✨', score: 65 },
+    { name: '뉴비123', tierIcon: '👾', score: 40 }
   ];
-  const loseTeam = [
-    { id: 3, name: '도안팀장님', scoreChange: '- 15', isMe: false },
-    { id: 4, name: '뉴비123', scoreChange: '- 10', isMe: false },
-  ];
+
+  // 1. 점수 기준 내림차순(높은 순) 정렬
+  const sortedResults = [...results].sort((a, b) => b.score - a.score);
+
+  // 2. 등수별 보상 포인트 계산
+  const getRewardPoints = (rankIndex) => {
+    const rewards = [100, 50, 20, 5]; 
+    return rewards[rankIndex] !== undefined ? rewards[rankIndex] : 0;
+  };
 
   return (
-    <div style={styles.container}>
-      {/* 상단: 승패 결과 및 코드 보기 */}
-      <div style={styles.topSection}>
+    <div style={styles.pageWrapper}>
+      <div style={styles.container}>
+        <h2 style={styles.title}>🏆 BATTLE RESULTS 🏆</h2>
+        <p style={styles.subtitle}>모든 플레이어가 제출을 완료했습니다.</p>
         
-        {/* WIN 패널 */}
-        <div style={{ ...styles.resultBox, border: '1px solid #20c997' }}>
-          <div style={styles.userList}>
-            {winTeam.map(user => (
-              <div key={user.id} style={{ ...styles.userRow, borderColor: user.isMe ? '#20c997' : '#333' }}>
-                <div style={styles.icon}>👾</div>
-                <div style={{ ...styles.name, color: user.isMe ? '#20c997' : '#fff', fontWeight: user.isMe ? 'bold' : 'normal' }}>{user.name}</div>
-                <div style={styles.scoreChange}>기존 점수 <span style={{ color: '#20c997', fontWeight: 'bold' }}>{user.scoreChange}점</span></div>
+        <div style={styles.rankingList}>
+          {sortedResults.map((player, index) => {
+            const rank = index + 1;
+            const isFirst = rank === 1;
+            const isMe = player.name.includes('(나)');
+
+            return (
+              <div 
+                key={index} 
+                style={{
+                  ...styles.rankRow,
+                  borderColor: isFirst ? '#20c997' : isMe ? '#ff9f43' : '#333',
+                  backgroundColor: isFirst ? 'rgba(32, 201, 151, 0.05)' : 'rgba(26, 26, 26, 0.5)',
+                  boxShadow: isFirst ? '0 0 15px rgba(32, 201, 151, 0.1)' : 'none'
+                }}
+              >
+                <div style={styles.leftInfo}>
+                  <span style={{
+                    ...styles.rankNumber,
+                    color: isFirst ? '#20c997' : rank === 2 ? '#ff9f43' : '#fff',
+                    fontSize: isFirst ? '22px' : '18px'
+                  }}>
+                    {rank}등
+                  </span>
+                  <span style={styles.tierIcon}>{player.tierIcon}</span>
+                  <span style={{
+                    ...styles.playerName,
+                    color: isMe ? '#ff9f43' : '#fff',
+                    fontWeight: isMe || isFirst ? 'bold' : 'normal'
+                  }}>
+                    {player.name} {isMe && <span style={styles.meTag}>ME</span>}
+                  </span>
+                </div>
+
+                <div style={styles.rightInfo}>
+                  <div style={styles.scoreBox}>
+                    <span style={styles.label}>SCORE</span>
+                    <span style={{...styles.scoreValue, color: isFirst ? '#20c997' : '#fff'}}>{player.score}점</span>
+                  </div>
+                  <div style={styles.rewardBox}>
+                    <span style={styles.label}>REWARD</span>
+                    <span style={{
+                      ...styles.rewardValue,
+                      color: isFirst ? '#20c997' : rank === 4 ? '#777' : '#ff9f43'
+                    }}>
+                      +{getRewardPoints(index)} LP
+                    </span>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-          <div style={styles.resultTextWin}>WIN <span style={{ fontSize: '24px' }}>+ 25점</span></div>
+            );
+          })}
         </div>
 
-        {/* LOST 패널 */}
-        <div style={{ ...styles.resultBox, border: '1px solid #ff4d4d' }}>
-          <div style={styles.userList}>
-            {loseTeam.map(user => (
-              <div key={user.id} style={styles.userRow}>
-                <div style={styles.icon}>💀</div>
-                <div style={styles.name}>{user.name}</div>
-                <div style={styles.scoreChange}>기존 점수 <span style={{ color: '#ff4d4d', fontWeight: 'bold' }}>{user.scoreChange}점</span></div>
-              </div>
-            ))}
-          </div>
-          <div style={styles.resultTextLose}>LOST <span style={{ fontSize: '24px' }}>- 15점</span></div>
-        </div>
-
-        {/* 코드 보기 패널 */}
-        <div style={styles.codeViewBox}>
-          <div style={{ color: '#888', fontSize: '12px', textAlign: 'center', marginBottom: '10px' }}>참가자 코드 리뷰</div>
-          {[...winTeam, ...loseTeam].map(user => (
-            <div key={`code-${user.id}`} style={styles.codeBtnRow}>
-              <div style={styles.iconSmall}>{user.id > 2 ? '💀' : '👾'}</div>
-              <button style={styles.codeBtn}>코드 보기</button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 하단: 채팅 및 액션 */}
-      <div style={styles.bottomSection}>
-        {/* 채팅 창 */}
-        <div style={styles.chatArea}>
-          <div style={styles.chatBox}>
-            <span style={{ color: '#888' }}>결과창 채팅이 시작되었습니다.</span>
-          </div>
-          <div style={styles.chatInputRow}>
-            <button style={styles.chatModeBtn}>채팅모드</button>
-            <input type="text" placeholder="메시지를 입력하세요" style={styles.chatInput} />
-          </div>
-        </div>
-
-        {/* 참가자 목록 및 컨트롤 버튼 */}
-        <div style={styles.actionArea}>
-          <div style={styles.participantBox}>
-            <div style={{ color: '#aaa', fontSize: '12px', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '10px' }}>참가자 현황</div>
-            {[...winTeam, ...loseTeam].map(u => (
-              <div key={`p-${u.id}`} style={{ color: '#fff', fontSize: '13px', padding: '5px 0' }}>{u.name}</div>
-            ))}
-          </div>
-          <div style={styles.buttonRow}>
-            <button style={styles.actionBtn}>다시하기</button>
-            <button style={styles.exitBtn} onClick={onReturnLobby}>나가기</button>
-          </div>
-        </div>
+        <button style={styles.lobbyBtn} onClick={onGoToLobby}>
+          로비로 돌아가기
+        </button>
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: { display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#0f0f0f', padding: '20px', gap: '20px', boxSizing: 'border-box', fontFamily: '"Inter", sans-serif' },
+  pageWrapper: { display: 'flex', width: '100vw', height: '100vh', backgroundColor: '#0d0d0d', color: '#fff', justifyContent: 'center', alignItems: 'center', padding: '15px', boxSizing: 'border-box' },
+  container: { width: '650px', backgroundColor: '#121212', border: '1px solid #222', borderRadius: '12px', padding: '40px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.6)' },
+  title: { color: '#20c997', margin: '0 0 10px 0', fontSize: '32px', fontWeight: '900', letterSpacing: '1px', textShadow: '0 0 15px rgba(32, 201, 151, 0.3)' },
+  subtitle: { color: '#aaa', margin: '0 0 35px 0', fontSize: '14px' },
+  rankingList: { width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '35px' },
   
-  topSection: { display: 'flex', gap: '20px', flex: 6, minHeight: 0 },
-  resultBox: { flex: 2, borderRadius: '8px', display: 'flex', flexDirection: 'column', backgroundColor: '#151515', padding: '20px' },
-  userList: { flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto' },
-  userRow: { display: 'flex', alignItems: 'center', border: '1px solid #333', borderRadius: '6px', padding: '12px', backgroundColor: '#111' },
-  icon: { width: '36px', height: '36px', backgroundColor: '#222', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: '15px' },
-  name: { flex: 1, color: '#fff', fontSize: '15px' },
-  scoreChange: { color: '#aaa', fontSize: '13px' },
-  resultTextWin: { textAlign: 'center', fontSize: '40px', fontWeight: 'bold', color: '#20c997', marginTop: '20px', textShadow: '0 0 20px rgba(32, 201, 151, 0.4)' },
-  resultTextLose: { textAlign: 'center', fontSize: '40px', fontWeight: 'bold', color: '#ff4d4d', marginTop: '20px', textShadow: '0 0 20px rgba(255, 77, 77, 0.4)' },
-
-  codeViewBox: { flex: 1, border: '1px solid #333', borderRadius: '8px', backgroundColor: '#151515', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto' },
-  codeBtnRow: { display: 'flex', alignItems: 'center', gap: '10px' },
-  iconSmall: { width: '30px', height: '30px', backgroundColor: '#222', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' },
-  codeBtn: { flex: 1, padding: '10px', border: '1px solid #444', borderRadius: '4px', backgroundColor: '#111', color: '#ccc', cursor: 'pointer', transition: 'all 0.2s', ':hover': { backgroundColor: '#222' } },
-
-  bottomSection: { display: 'flex', gap: '20px', flex: 4, minHeight: 0 },
-  chatArea: { flex: 3, border: '1px solid #333', borderRadius: '8px', backgroundColor: '#151515', display: 'flex', flexDirection: 'column', padding: '15px', gap: '15px' },
-  chatBox: { flex: 1, border: '1px solid #222', borderRadius: '6px', backgroundColor: '#111', padding: '15px', overflowY: 'auto', fontFamily: '"Fira Code", monospace', fontSize: '13px' },
-  chatInputRow: { display: 'flex', gap: '10px' },
-  chatModeBtn: { padding: '12px 20px', border: '1px solid #444', backgroundColor: '#222', color: '#aaa', borderRadius: '4px', fontWeight: 'bold' },
-  chatInput: { flex: 1, padding: '12px', border: '1px solid #444', backgroundColor: '#111', color: '#fff', borderRadius: '4px', outline: 'none', fontFamily: '"Fira Code", monospace' },
-
-  actionArea: { flex: 1, display: 'flex', flexDirection: 'column', gap: '15px' },
-  participantBox: { flex: 1, border: '1px solid #333', borderRadius: '8px', backgroundColor: '#151515', padding: '15px', overflowY: 'auto' },
-  buttonRow: { display: 'flex', gap: '10px' },
-  actionBtn: { flex: 1, padding: '15px', border: 'none', borderRadius: '6px', backgroundColor: '#20c997', color: '#000', fontWeight: 'bold', cursor: 'pointer', fontSize: '15px' },
-  exitBtn: { flex: 1, padding: '15px', border: '1px solid #ff4d4d', borderRadius: '6px', backgroundColor: '#441111', color: '#ff4d4d', fontWeight: 'bold', cursor: 'pointer', fontSize: '15px' }
+  rankRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', border: '1px solid #333', borderRadius: '8px', transition: 'all 0.2s ease' },
+  leftInfo: { display: 'flex', alignItems: 'center', gap: '15px' },
+  rankNumber: { fontWeight: '900', width: '45px', fontStyle: 'italic' },
+  tierIcon: { fontSize: '18px' },
+  playerName: { fontSize: '16px' },
+  meTag: { fontSize: '10px', backgroundColor: '#ff9f43', color: '#000', padding: '2px 5px', borderRadius: '4px', marginLeft: '5px', verticalAlign: 'middle', fontWeight: '900' },
+  
+  rightInfo: { display: 'flex', gap: '25px', alignItems: 'center' },
+  scoreBox: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' },
+  rewardBox: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', width: '70px' },
+  label: { fontSize: '10px', color: '#666', fontWeight: 'bold', letterSpacing: '0.5px' },
+  scoreValue: { fontSize: '15px', fontWeight: 'bold' },
+  rewardValue: { fontSize: '15px', fontWeight: 'bold' },
+  
+  lobbyBtn: { width: '100%', padding: '15px', backgroundColor: '#20c997', color: '#000', border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'background 0.2s, transform 0.1s', outline: 'none' }
 };
