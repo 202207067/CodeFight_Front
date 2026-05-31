@@ -1,7 +1,13 @@
+import React, { useState } from 'react';
+import LobbyPage from './pages/LobbyPage';
+import WaitingRoomPage from './pages/WaitingRoomPage';
+import BattlePage from './pages/BattlePage';
+import ResultPage from './pages/ResultPage';
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('lobby');
   const [currentRoom, setCurrentRoom] = useState(null);
-  const [finalResults, setFinalResults] = useState([]); // 결과 데이터 보관용
+  const [finalResults, setFinalResults] = useState([]);
 
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0f0f0f', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
@@ -29,14 +35,12 @@ export default function App() {
           roomData={currentRoom} 
           onExit={() => setCurrentScreen('lobby')} 
           onShowResult={(resultsData) => {
-            // 🌟 배틀 끝날 때 받은 데이터를 상태에 저장하고 결과창으로 이동
             setFinalResults(resultsData);
             setCurrentScreen('result');
           }}
         />
       )}
 
-      {/* 🌟 결과창 렌더링 추가 */}
       {currentScreen === 'result' && (
         <ResultPage 
           gameResults={finalResults} 

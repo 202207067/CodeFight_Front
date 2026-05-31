@@ -1,0 +1,5 @@
+export const GAME_STATUS = {
+  WAITING: 'WAITING',
+  PLAYING: 'PLAYING',
+  FINISHED: 'FINISHED',
+};

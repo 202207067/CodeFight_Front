@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function CreateRoomModal({ onClose, onCreate }) {
+export default function Modal({ onClose, onCreate }) {
   const [title, setTitle] = useState('');
   const [capacity, setCapacity] = useState('2'); // 기본값: 2명(개인전)
   const [level, setLevel] = useState('Level 1');
@@ -12,7 +12,6 @@ export default function CreateRoomModal({ onClose, onCreate }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return alert('방 제목을 입력해주세요!');
-    // 팀전 관련 데이터 제거
     onCreate({ title, capacity, level, language, time, questionCount, password });
   };
 
@@ -22,17 +21,20 @@ export default function CreateRoomModal({ onClose, onCreate }) {
         <h2 style={styles.modalTitle}>방 만들기 (개인전)</h2>
         
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* 🌟 1. 개인전 인원 선택 (팀전 제외) */}
+          {/* 🌟 인원 선택 옵션을 8명까지 확장 */}
           <div style={styles.inputRow}>
             <div style={styles.labelBox}>인원 제한</div>
             <select style={styles.inputFlex} value={capacity} onChange={e => setCapacity(e.target.value)}>
               <option value="2">2명</option>
               <option value="3">3명</option>
               <option value="4">4명</option>
+              <option value="5">5명</option>
+              <option value="6">6명</option>
+              <option value="7">7명</option>
+              <option value="8">8명</option>
             </select>
           </div>
 
-          {/* 🌟 2. 방 제목 */}
           <div style={styles.inputRow}>
             <div style={styles.labelBox}>방 제목</div>
             <input 
@@ -43,7 +45,6 @@ export default function CreateRoomModal({ onClose, onCreate }) {
             />
           </div>
 
-          {/* 🌟 3. 설정 */}
           <div style={styles.dropdownRow}>
             <select style={styles.selectBox} value={level} onChange={e => setLevel(e.target.value)}>
               <option>Level 1</option><option>Level 2</option><option>Level 3</option>
@@ -62,7 +63,6 @@ export default function CreateRoomModal({ onClose, onCreate }) {
             </select>
           </div>
 
-          {/* 🌟 4. 비밀번호 */}
           <div style={styles.inputRow}>
             <div style={styles.labelBox}>비밀번호</div>
             <input 
@@ -84,7 +84,6 @@ export default function CreateRoomModal({ onClose, onCreate }) {
   );
 }
 
-// 스타일 객체는 기존과 동일하게 유지하거나, 인원 선택부만 살짝 수정하시면 됩니다.
 const styles = {
   overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 },
   modal: { width: '500px', backgroundColor: '#1a1a1a', padding: '40px', borderRadius: '12px', boxShadow: '0 0 30px rgba(0,0,0,0.9)' },
